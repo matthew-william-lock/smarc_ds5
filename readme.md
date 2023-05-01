@@ -1,6 +1,6 @@
 # smarc_ds5
 
-[![CI](https://github.com/matthew-william-lock/smarc_ds5_ros/actions/workflows/main.yaml/badge.svg)](https://github.com/matthew-william-lock/smarc_ds5_ros/actions/workflows/main.yaml) [![license](https://img.shields.io/badge/License-MIT%203--Clause-blue.svg)](https://mit-license.org/)
+[![CI](https://github.com/matthew-william-lock/smarc_ds5_ros/actions/workflows/main.yaml/badge.svg)](https://github.com/matthew-william-lock/smarc_ds5_ros/actions/workflows/main.yaml) [![license](https://img.shields.io/badge/License-MIT-blue.svg)](https://mit-license.org/)
 
 Control SAM AUV using a DualSense controller.
 
@@ -10,7 +10,7 @@ Control SAM AUV using a DualSense controller.
 
 ## Installation
 
-Steps for installation are taken from the [pydualsense](https://github.com/flok/pydualsense) dependency.
+> Steps for installation are taken from the [pydualsense](https://github.com/flok/pydualsense) dependency.
 
 You first need to add a udev rule to let the user access the PS5 controller without requiring root privileges.
 
