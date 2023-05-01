@@ -43,7 +43,7 @@ class ds5_teleop():
         RPM_MAX = 1500
         RAD_MAX = 0.1
 
-        rps_cmd = msg.axes[1] * RPM_MAX
+        rps_cmd = int(msg.axes[1] * RPM_MAX)
         x_cmd = msg.axes[2] * RAD_MAX
         y_cmd = msg.axes[3] * RAD_MAX
 
@@ -59,8 +59,6 @@ class ds5_teleop():
         self.rpm1_pub.publish(rpm1_msg)
         self.rpm2_pub.publish(rpm2_msg)
         self.angle_pub.publish(angle_msg)
-        
-        pass
 
 
     def __init__(self):
