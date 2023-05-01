@@ -9,6 +9,8 @@ from pydualsense import *
 
 from ds5_msgs.msg import SetColour
 
+from sam_msgs.msg import Leak
+
 class Ds5Ros():
     def __init__(self):
         self.logging_prefix = "DS5_ROS: "
@@ -30,6 +32,28 @@ class Ds5Ros():
 
         # Subscribers
         self.set_LED_sub = rospy.Subscriber('ds/set_LED', SetColour, self.set_LED, queue_size=10)
+
+        self.leak_detected = False
+        self.leak_sub = rospy.Subscriber('core/leak', Leak, self.leak_callback, queue_size=10)
+
+    def leak_callback(self, msg: Leak):
+        if msg.value and not self.leak_detected:
+
+            self.leak_detected = True
+
+            # Turn on LED
+            self.dualsense.setLeftMotor(255)
+            self.dualsense.setRightMotor(255)
+
+            # Flash LED red
+            while self.leak_detected:
+
+                self.dualsense.light.setColorI(255, 0, 0)
+                rospy.sleep(0.3)
+                self.dualsense.light.setColorI(0, 0, 0)
+                rospy.sleep(0.3)
+
+
 
     def set_LED(self, msg: SetColour):
         self.dualsense.light.setColorI(msg.R, msg.G, msg.B)
