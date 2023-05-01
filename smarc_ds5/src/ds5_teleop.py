@@ -33,6 +33,8 @@ from sensor_msgs.msg import JoyFeedbackArray, Joy
 from smarc_msgs.msg import ThrusterRPM
 from sam_msgs.msg import ThrusterAngles
 
+from std_msgs.msg import Bool
+
 class ds5_teleop():
 
     def joy_callback(self, msg:Joy):
@@ -42,15 +44,26 @@ class ds5_teleop():
 
         RPM_MAX = 1500
         RAD_MAX = 0.1
+        RAD_STEPS = 5
+        RAD_STEP_SIZE = RAD_MAX / RAD_STEPS
 
-        rps_cmd = int(msg.axes[1] * RPM_MAX)
+        rpm_cmd = int(msg.axes[1] * RPM_MAX)
         x_cmd = msg.axes[2] * RAD_MAX
         y_cmd = msg.axes[3] * RAD_MAX
 
+        # Round rpm_cmd to nearest 100
+        rpm_cmd = int(round(rpm_cmd, -2))
+
+        # Round x_cmd and y_cmd to nearest value on range RAD_MIN to RAD_MAX with RAD_STEPS steps
+        x_steps = round(x_cmd / RAD_STEP_SIZE)
+        x_cmd = x_steps * RAD_STEP_SIZE
+        y_steps = round(y_cmd / RAD_STEP_SIZE)
+        y_cmd = y_steps * RAD_STEP_SIZE
+
         rpm1_msg = ThrusterRPM()
         rpm2_msg = ThrusterRPM()
-        rpm1_msg.rpm = rps_cmd
-        rpm2_msg.rpm = rps_cmd
+        rpm1_msg.rpm = rpm_cmd
+        rpm2_msg.rpm = rpm_cmd
 
         angle_msg = ThrusterAngles()
         angle_msg.thruster_vertical_radians = y_cmd
