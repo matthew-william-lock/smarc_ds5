@@ -9,6 +9,10 @@
         <node type="ds5ros_node.py" pkg="ds5_ros" name="ds5_ros_node" output="screen">
         </node>
 
+        <!-- SMARC DS5 CONTROLLER -->
+        <node type="ds5_teleop.py" pkg="smarc_ds5" name="ds5_controller" output="screen">
+        </node>
+
     </group>
 
 </launch>
