@@ -6,7 +6,7 @@
     <group ns="$(arg namespace)">
 
         <!-- DS5 ROS DRIVER -->
-        <node type="ds5ros_node.py" pkg="ds5_ros" name="ds5_ros_node" output="screen">
+        <node type="ds5_ros_node.py" pkg="smarc_ds5" name="ds5_ros_node" output="screen">
         </node>
 
         <!-- SMARC DS5 CONTROLLER -->

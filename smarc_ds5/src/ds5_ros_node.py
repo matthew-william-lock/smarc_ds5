@@ -1,9 +1,14 @@
 #!/usr/bin/env python3
-#ManhLinhPhan
+
+# THIS CODE IS ADAPTED FROM https://github.com/autonohm/ds5_ros
+
 import rospy
 import math
 from sensor_msgs.msg import JoyFeedbackArray, Joy
 from pydualsense import *
+
+from smarc_ds5.msg import SetColour
+
 class Ds5Ros():
     def __init__(self):
         self.logging_prefix = "DS5_ROS: "
@@ -23,43 +28,13 @@ class Ds5Ros():
         self.maskR = 0xFF0000
         self.maskG = 0x00FF00
         self.maskB = 0x0000FF
-    '''
-    JoyFeedback Struct
-    TYPE_LED = 0 | TYPE_RUMBLE = 1 (use also for feedback on rear button) | TYPE_BUZZER = 2
-    type    : above
-    id      : 0 = Left Motor Rumble | 1 = Right Motor Rumble | 2 = L2 feedback Trigger | 3 = R2 feedback Trigger
-    Using combination of type and id to get the result
-    intensity:
-    '''
-    def set_feedback(self, msg : JoyFeedbackArray):
-        #print(msg)
-        for feedback in msg.array: #not iterable
-            # type = 0: LED control
-            # RGB (24bit) is sent as float32 -> can almost be covered by 23 mantissa
-            if feedback.type == 0:
-                int_intensity = int(feedback.intensity)
-                light_red = (int_intensity & self.maskR) >> 16
-                light_green = (int_intensity & self.maskG) >> 8
-                light_blue = (int_intensity & self.maskB)
-                self.dualsense.light.setColorI(light_red,light_green,light_blue)
-                continue
-            #other type
-            if feedback.intensity > 1.0 or feedback.intensity <0.0:
-                rospy.logerr(self.logging_prefix + 'intensity must be in range 0.0 - 1.0')
-                continue
-            else:
-                feedback.intensity = feedback.intensity * 255.0
-            #intensity muss be an integer
-            if feedback.type == 1 and feedback.id == 0:
-                pass #add effect later
-            elif feedback.type == 1 and feedback.id == 1:
-                pass #add effect later
-            elif feedback.type == 1 and feedback.id == 2:
-                self.dualsense.triggerL.setMode(TriggerModes.Rigid)
-                self.dualsense.triggerL.setForce(1, int(feedback.intensity))
-            elif feedback.type == 1 and feedback.id == 3:
-                self.dualsense.triggerR.setMode(TriggerModes.Rigid)
-                self.dualsense.triggerR.setForce(1, int(feedback.intensity) )
+
+        # Subscribers
+        self.set_LED_sub = rospy.Subscriber('ds/set_LED', SetColour, self.set_LED, queue_size=10)
+
+    def set_LED(self, msg: SetColour):
+        self.dualsense.light.setColorI(msg.R, msg.G, msg.B)
+   
     def joy_publish(self):
         # try:
         joy_msg = Joy()
@@ -114,7 +89,7 @@ class Ds5Ros():
                     rospy.logwarn_throttle(2, "Cannot initialize controller!")
                 else:
                     # set rgb led to green
-                    self.dualsense.light.setColorI(0,255,0)
+                    self.dualsense.light.setColorI(0,0,255)
                     rospy.loginfo('Connected to controller.')
                     self.node_state = 1
             elif self.node_state == 1:
