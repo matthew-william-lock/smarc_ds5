@@ -10,6 +10,8 @@
   <maintainer email="mwlock@kth.se">matt</maintainer>
   <license>MIT</license>
 
+  <depend>std_msgs</depend>
+
   <buildtool_depend>catkin</buildtool_depend>
   <build_depend>message_generation</build_depend>
   <build_export_depend>message_generation</build_export_depend>
