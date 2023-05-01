@@ -7,7 +7,7 @@ import math
 from sensor_msgs.msg import JoyFeedbackArray, Joy
 from pydualsense import *
 
-from smarc_ds5.msg import SetColour
+from ds5_msgs.msg import SetColour
 
 class Ds5Ros():
     def __init__(self):
