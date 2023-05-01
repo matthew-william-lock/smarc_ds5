@@ -42,36 +42,48 @@ class ds5_teleop():
         Callback function for the joystick subscriber
         """
 
-        RPM_MAX = 1500
-        RAD_MAX = 0.1
-        RAD_STEPS = 5
-        RAD_STEP_SIZE = RAD_MAX / RAD_STEPS
+        x_pressed = msg.buttons[0] == 1
 
-        rpm_cmd = int(msg.axes[1] * RPM_MAX)
-        x_cmd = msg.axes[2] * RAD_MAX
-        y_cmd = msg.axes[3] * RAD_MAX
+        if x_pressed and not self.enable_teleop_pressed:
+            self.teleop_enabled = not self.teleop_enabled
+            self.enable_teleop_pressed = True
+            rospy.loginfo("Teleop enabled: {}".format(self.teleop_enabled))
 
-        # Round rpm_cmd to nearest 100
-        rpm_cmd = int(round(rpm_cmd, -2))
+        if not x_pressed:
+            self.enable_teleop_pressed = False
 
-        # Round x_cmd and y_cmd to nearest value on range RAD_MIN to RAD_MAX with RAD_STEPS steps
-        x_steps = round(x_cmd / RAD_STEP_SIZE)
-        x_cmd = x_steps * RAD_STEP_SIZE
-        y_steps = round(y_cmd / RAD_STEP_SIZE)
-        y_cmd = y_steps * RAD_STEP_SIZE
+        if self.teleop_enabled:
 
-        rpm1_msg = ThrusterRPM()
-        rpm2_msg = ThrusterRPM()
-        rpm1_msg.rpm = rpm_cmd
-        rpm2_msg.rpm = rpm_cmd
+            RPM_MAX = 1500
+            RAD_MAX = 0.1
+            RAD_STEPS = 5
+            RAD_STEP_SIZE = RAD_MAX / RAD_STEPS
 
-        angle_msg = ThrusterAngles()
-        angle_msg.thruster_vertical_radians = y_cmd
-        angle_msg.thruster_horizontal_radians = x_cmd
+            rpm_cmd = int(msg.axes[1] * RPM_MAX)
+            x_cmd = msg.axes[2] * RAD_MAX
+            y_cmd = msg.axes[3] * RAD_MAX
 
-        self.rpm1_pub.publish(rpm1_msg)
-        self.rpm2_pub.publish(rpm2_msg)
-        self.angle_pub.publish(angle_msg)
+            # Round rpm_cmd to nearest 100
+            rpm_cmd = int(round(rpm_cmd, -2))
+
+            # Round x_cmd and y_cmd to nearest value on range RAD_MIN to RAD_MAX with RAD_STEPS steps
+            x_steps = round(x_cmd / RAD_STEP_SIZE)
+            x_cmd = x_steps * RAD_STEP_SIZE
+            y_steps = round(y_cmd / RAD_STEP_SIZE)
+            y_cmd = y_steps * RAD_STEP_SIZE
+
+            rpm1_msg = ThrusterRPM()
+            rpm2_msg = ThrusterRPM()
+            rpm1_msg.rpm = rpm_cmd
+            rpm2_msg.rpm = rpm_cmd
+
+            angle_msg = ThrusterAngles()
+            angle_msg.thruster_vertical_radians = y_cmd
+            angle_msg.thruster_horizontal_radians = x_cmd
+
+            self.rpm1_pub.publish(rpm1_msg)
+            self.rpm2_pub.publish(rpm2_msg)
+            self.angle_pub.publish(angle_msg)
 
 
     def __init__(self):
@@ -86,6 +98,12 @@ class ds5_teleop():
 
         # Angle publisher
         self.angle_pub = rospy.Publisher('core/thrust_vector_cmd', ThrusterAngles, queue_size=1000) 
+
+        # Keep track of buttons pressed
+        self.enable_teleop_pressed = False
+
+        # States
+        self.teleop_enabled = False
 
 
         # Joy subscriber
