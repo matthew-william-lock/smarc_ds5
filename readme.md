@@ -4,6 +4,10 @@
 
 Control SAM AUV using a DualSense controller.
 
+<p align="center">
+  <img src="https://user-images.githubusercontent.com/53016036/235475892-bb5d8feb-576f-4dde-8bdc-7c40e187d4f6.png" width="100%">
+</p>
+
 ## Installation
 
 Steps for installation are taken from the [pydualsense](https://github.com/flok/pydualsense) dependency.
