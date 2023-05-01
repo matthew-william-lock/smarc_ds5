@@ -32,6 +32,7 @@ import rospy
 from sensor_msgs.msg import JoyFeedbackArray, Joy
 from smarc_msgs.msg import ThrusterRPM
 from sam_msgs.msg import ThrusterAngles
+from ds5_msgs.msg import SetColour
 
 from std_msgs.msg import Bool
 
@@ -48,6 +49,13 @@ class ds5_teleop():
             self.teleop_enabled = not self.teleop_enabled
             self.enable_teleop_pressed = True
             rospy.loginfo("Teleop enabled: {}".format(self.teleop_enabled))
+
+            # Set LED colour
+            colour_msg = SetColour()
+            colour_msg.R = 255 if not self.teleop_enabled else 0
+            colour_msg.G = 255 if self.teleop_enabled else 0
+            colour_msg.B = 0
+            self.setLED.publish(colour_msg)
 
         if not x_pressed:
             self.enable_teleop_pressed = False
@@ -92,12 +100,13 @@ class ds5_teleop():
         rospy.init_node('ds5_teleop', anonymous=True)
         rate = rospy.Rate(10) # 10hz
 
-        # Thruster publisher
+        # SAM Control publishers
         self.rpm1_pub = rospy.Publisher('core/thruster1_cmd', ThrusterRPM, queue_size=10)
         self.rpm2_pub = rospy.Publisher('core/thruster2_cmd', ThrusterRPM, queue_size=10)
-
-        # Angle publisher
         self.angle_pub = rospy.Publisher('core/thrust_vector_cmd', ThrusterAngles, queue_size=1000) 
+
+        # DS5 publishers
+        self.setLED = rospy.Publisher('ds/set_LED', SetColour, queue_size=10)
 
         # Keep track of buttons pressed
         self.enable_teleop_pressed = False
