@@ -23,7 +23,6 @@ class Ds5Ros():
         self.joy_pub_topic = rospy.get_param("joy_pub", "joy")
         # controller is not straight zero for the axis.. prevent tiny robot movements
         self.deadzone = rospy.get_param("deadzone", 0.05)
-        self.joy_sub = rospy.Subscriber(self.joy_sub_topic, JoyFeedbackArray, self.set_feedback, queue_size= 10)
         self.joy_pub = rospy.Publisher(self.joy_pub_topic, Joy, queue_size = 1)
         self.maskR = 0xFF0000
         self.maskG = 0x00FF00
