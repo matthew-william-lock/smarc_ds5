@@ -87,7 +87,7 @@ class ds5_teleop():
 
             angle_msg = ThrusterAngles()
             angle_msg.thruster_vertical_radians = y_cmd
-            angle_msg.thruster_horizontal_radians = x_cmd
+            angle_msg.thruster_horizontal_radians = x_cmd*-1
 
             self.rpm1_pub.publish(rpm1_msg)
             self.rpm2_pub.publish(rpm2_msg)
