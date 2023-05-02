@@ -101,9 +101,9 @@ class ds5_teleop():
         rate = rospy.Rate(10) # 10hz
 
         # SAM Control publishers
-        self.rpm1_pub = rospy.Publisher('core/thruster1_cmd', ThrusterRPM, queue_size=10)
-        self.rpm2_pub = rospy.Publisher('core/thruster2_cmd', ThrusterRPM, queue_size=10)
-        self.angle_pub = rospy.Publisher('core/thrust_vector_cmd', ThrusterAngles, queue_size=1000) 
+        self.rpm1_pub = rospy.Publisher('core/thruster1_cmd', ThrusterRPM, queue_size=2)
+        self.rpm2_pub = rospy.Publisher('core/thruster2_cmd', ThrusterRPM, queue_size=2)
+        self.angle_pub = rospy.Publisher('core/thrust_vector_cmd', ThrusterAngles, queue_size=2) 
 
         # DS5 publishers
         self.setLED = rospy.Publisher('ds/set_LED', SetColour, queue_size=10)
