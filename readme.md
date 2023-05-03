@@ -54,3 +54,10 @@ roslaunch smarc_ds5_ros sam_ds5.launch
 | ```Teleop disabled``` | Red |
 | ```Controller connected``` | Blue |
 | ```Leak detected``` | Flashing red |
+
+## Vibration feedback 
+
+| Vibration mode | Feedback |
+| --- | --- |
+| Short pulse | Teleop enabled |
+| Two short pulses | Teleop disabled |

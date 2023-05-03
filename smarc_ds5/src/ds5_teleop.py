@@ -32,11 +32,35 @@ import rospy
 from sensor_msgs.msg import JoyFeedbackArray, Joy
 from smarc_msgs.msg import ThrusterRPM
 from sam_msgs.msg import ThrusterAngles
+
 from ds5_msgs.msg import SetColour
+from ds5_msgs.msg import SetMotor
 
 from std_msgs.msg import Bool
 
+import time
+
 class ds5_teleop():
+    
+    # ================================================================================
+    # Motor Feedback Functions
+    # ================================================================================
+    
+    def send_short_motor_pulse(self, pulse_length: float, no_pulses = 1):
+        """
+        Send a short motor pulse to the DS5 controller
+        """
+        
+        for i in range(no_pulses):
+            motor_msg = SetMotor()
+            motor_msg.left_motor = 255
+            motor_msg.right_motor = 255
+            self.setMotor.publish(motor_msg)
+            time.sleep(pulse_length)
+            
+            motor_msg.left_motor = 0
+            motor_msg.right_motor = 0
+            self.setMotor.publish(motor_msg)
 
     def joy_callback(self, msg:Joy):
         """
@@ -56,6 +80,11 @@ class ds5_teleop():
             colour_msg.G = 255 if self.teleop_enabled else 0
             colour_msg.B = 0
             self.setLED.publish(colour_msg)
+            
+            if self.teleop_enabled:
+                self.send_short_motor_pulse(0.2, 1)
+            else:
+                self.send_short_motor_pulse(0.2, 2)
 
         if not x_pressed:
             self.enable_teleop_pressed = False
@@ -98,7 +127,7 @@ class ds5_teleop():
 
         # pub = rospy.Publisher('chatter', String, queue_size=10)
         rospy.init_node('ds5_teleop', anonymous=True)
-        rate = rospy.Rate(10) # 10hz
+        rate = rospy.Rate(1) # 10hz
 
         # SAM Control publishers
         self.rpm1_pub = rospy.Publisher('core/thruster1_cmd', ThrusterRPM, queue_size=10)
@@ -107,6 +136,7 @@ class ds5_teleop():
 
         # DS5 publishers
         self.setLED = rospy.Publisher('ds/set_LED', SetColour, queue_size=10)
+        self.setMotor = rospy.Publisher('ds/set_motor', SetMotor, queue_size=10)
 
         # Keep track of buttons pressed
         self.enable_teleop_pressed = False

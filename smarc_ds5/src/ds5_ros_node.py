@@ -8,6 +8,7 @@ from sensor_msgs.msg import JoyFeedbackArray, Joy
 from pydualsense import *
 
 from ds5_msgs.msg import SetColour
+from ds5_msgs.msg import SetMotor
 
 from sam_msgs.msg import Leak
 
@@ -32,6 +33,7 @@ class Ds5Ros():
 
         # Subscribers
         self.set_LED_sub = rospy.Subscriber('ds/set_LED', SetColour, self.set_LED, queue_size=10)
+        self.set_motor_sub = rospy.Subscriber('ds/set_motor', SetMotor, self.set_motor, queue_size=10)
 
         self.leak_detected = False
         self.leak_sub = rospy.Subscriber('core/leak', Leak, self.leak_callback, queue_size=10)
@@ -52,8 +54,14 @@ class Ds5Ros():
                 rospy.sleep(0.3)
                 self.dualsense.light.setColorI(0, 0, 0)
                 rospy.sleep(0.3)
+                
+    # ================================================================================
+    # DS5 Control
+    # ================================================================================
 
-
+    def set_motor(self, msg: SetMotor):
+        self.dualsense.setLeftMotor(msg.left_motor)
+        self.dualsense.setRightMotor(msg.right_motor)
 
     def set_LED(self, msg: SetColour):
         self.dualsense.light.setColorI(msg.R, msg.G, msg.B)
