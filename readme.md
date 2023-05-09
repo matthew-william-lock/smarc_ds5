@@ -34,6 +34,8 @@ pip install pydualsense
 
 ## Launch
 
+After the package has been built and the controller is connected, launch the node using the following command:
+
 ```bash
 roslaunch smarc_ds5_ros sam_ds5.launch
 ```
