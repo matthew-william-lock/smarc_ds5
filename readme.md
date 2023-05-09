@@ -38,6 +38,11 @@ pip install pydualsense
 roslaunch smarc_ds5_ros sam_ds5.launch
 ```
 
+After launching, the following topics will be available:
+```bash
+- /sam/core/teleop/enable [std_msgs/Bool] (Publish status of teleop enable)
+```
+
 ## Controls 
 
 | Button | Action |

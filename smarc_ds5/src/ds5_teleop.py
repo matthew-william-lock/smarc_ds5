@@ -46,9 +46,16 @@ class ds5_teleop():
     # Motor Feedback Functions
     # ================================================================================
     
-    def send_short_motor_pulse(self, pulse_length: float, no_pulses = 1):
+    def send_motor_pulse(self, pulse_length: float, no_pulses = 1):
         """
-        Send a short motor pulse to the DS5 controller
+        Send a short motor pulse to the DS5 controller.
+        
+        Parameters
+        ----------
+        pulse_length : float
+            Length of the pulse in seconds
+        no_pulses : int
+            Number of pulses to send
         """
         
         for i in range(no_pulses):
@@ -61,6 +68,10 @@ class ds5_teleop():
             motor_msg.left_motor = 0
             motor_msg.right_motor = 0
             self.setMotor.publish(motor_msg)
+            
+    # ================================================================================
+    # Callback Functions
+    # ================================================================================
 
     def joy_callback(self, msg:Joy):
         """
@@ -82,9 +93,9 @@ class ds5_teleop():
             self.setLED.publish(colour_msg)
             
             if self.teleop_enabled:
-                self.send_short_motor_pulse(0.2, 1)
+                self.send_motor_pulse(0.2, 1)
             else:
-                self.send_short_motor_pulse(0.2, 2)
+                self.send_motor_pulse(0.2, 2)
 
         if not x_pressed:
             self.enable_teleop_pressed = False
@@ -121,7 +132,20 @@ class ds5_teleop():
             self.rpm1_pub.publish(rpm1_msg)
             self.rpm2_pub.publish(rpm2_msg)
             self.angle_pub.publish(angle_msg)
+            
+    def send_teleop_enabled(self, teleop_enabled: bool):
+        """
+        Send a teleop enabled message to the core
+        """
+        
+        teleop_enabled_msg = Bool()
+        teleop_enabled_msg.data = teleop_enabled
+        self.teleop_enabled_pub.publish(teleop_enabled_msg)
 
+
+    # ================================================================================
+    # Node Init
+    # ================================================================================
 
     def __init__(self):
 
@@ -129,10 +153,11 @@ class ds5_teleop():
         rospy.init_node('ds5_teleop', anonymous=True)
         rate = rospy.Rate(1) # 10hz
 
-        # SAM Control publishers
+        # Publishers
         self.rpm1_pub = rospy.Publisher('core/thruster1_cmd', ThrusterRPM, queue_size=2)
         self.rpm2_pub = rospy.Publisher('core/thruster2_cmd', ThrusterRPM, queue_size=2)
         self.angle_pub = rospy.Publisher('core/thrust_vector_cmd', ThrusterAngles, queue_size=2) 
+        self.teleop_enabled_pub = rospy.Publisher('core/teleop/enable', Bool, queue_size=10)
 
         # DS5 publishers
         self.setLED = rospy.Publisher('ds/set_LED', SetColour, queue_size=10)
@@ -144,12 +169,17 @@ class ds5_teleop():
         # States
         self.teleop_enabled = False
 
-
         # Joy subscriber
         self.joy_sub = rospy.Subscriber('joy', Joy, self.joy_callback)
 
         while not rospy.is_shutdown():
+            self.send_teleop_enabled(self.teleop_enabled)
             rate.sleep()
+            
+        # On shutdown, send a motor pulse to indicate shutdown and send teleop disabled
+        self.send_teleop_enabled(False)
+        self.send_motor_pulse(0.2, 2)
+        
 
 if __name__ == '__main__':
     try:

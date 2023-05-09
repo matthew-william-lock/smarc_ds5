@@ -14,6 +14,6 @@ Bool face_circle
 
 # shoulder buttons
 Bool shoulder_l1
-float32 shoulder_l2
 Bool shoulder_r1
+float32 shoulder_l2
 float32 shoulder_r2
