@@ -51,7 +51,7 @@ After launching, the following topics will be available:
 | --- | --- | --- | --- |
 | ```Left stick``` | Send RPM commands to motors | - | - |
 | ```Right stick``` | Send thrust vector commands | - | - |
-| ```x``` | Toggle teleop enable | ```One short pulse``` - Enabled <br>```Two short pulse``` - Enabled | ```Green``` - Enabled<br>```Red``` - Disabled | 
+| ```x``` | Toggle teleop enable | ```One short pulse``` - Enabled <br>```Two short pulse``` - Disabled | ```Green``` - Enabled<br>```Red``` - Disabled | 
 
 ## Status Indicators
 
