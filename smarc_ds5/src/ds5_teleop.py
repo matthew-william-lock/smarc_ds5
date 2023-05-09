@@ -72,7 +72,7 @@ class ds5_teleop():
                 self.setMotor.publish(motor_msg)
                 
                 # Sleep for pulse length but check if the thread has been killed
-                for i in range(pulse_length%0.1):
+                for i in range(int(pulse_length / 0.1))):
                     # Ensure that only the latest thread runs to completion
                     if self.button_pressed_flag.is_set() or last_press:
                         self.button_pressed_flag.clear()
