@@ -2,7 +2,7 @@
 
 [![CI](https://github.com/matthew-william-lock/smarc_ds5_ros/actions/workflows/main.yaml/badge.svg)](https://github.com/matthew-william-lock/smarc_ds5_ros/actions/workflows/main.yaml) [![license](https://img.shields.io/badge/License-MIT-blue.svg)](https://mit-license.org/)
 
-Control SAM AUV using a DualSense controller.
+Control SAM AUV using a DualSense controller, and get sensory feedback from the controller's LED and vibration motors.
 
 <p align="center">
   <img src="https://user-images.githubusercontent.com/53016036/235476324-ffab01e0-7e11-438f-a3e0-7eedcea22abf.png" width="100%">
@@ -47,24 +47,14 @@ After launching, the following topics will be available:
 
 ## Controls 
 
-| Button | Action |
-| --- | --- |
-| ```Left stick``` | Send RPM commands ranging from ```-1500``` to ```1500```. ```Up``` indicates positive and ```down``` negative |
-| ```Right stick``` | Send thrust vector commands |
-| ```x``` | Toggle teleop enable |
+| Button | Action | Vibration Feedback | LED Feedback |
+| --- | --- | --- | --- |
+| ```Left stick``` | Send RPM commands to motors | - | - |
+| ```Right stick``` | Send thrust vector commands | - | - |
+| ```x``` | Toggle teleop enable | ```One short pulse``` - Enabled <br>```Two short pulse``` - Enabled | ```Green``` - Enabled<br>```Red``` - Disabled | 
 
-## LED States
+## Status Indicators
 
-| State | Color |
-| --- | --- |
-| ```Teleop enabled``` | Green |
-| ```Teleop disabled``` | Red |
-| ```Controller connected``` | Blue |
-| ```Leak detected``` | Flashing red |
-
-## Vibration feedback 
-
-| Vibration mode | Feedback |
-| --- | --- |
-| Short pulse | Teleop enabled |
-| Two short pulses | Teleop disabled |
+| State | Vibration mode | LED colour |
+| --- | --- | --- | 
+| ```Leak detected``` | Continuous vibration | Flashing red |

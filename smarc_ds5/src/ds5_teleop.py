@@ -38,6 +38,7 @@ from ds5_msgs.msg import SetMotor
 
 from std_msgs.msg import Bool
 
+import threading
 import time
 
 class ds5_teleop():
@@ -48,26 +49,44 @@ class ds5_teleop():
     
     def send_motor_pulse(self, pulse_length: float, no_pulses = 1):
         """
-        Send a short motor pulse to the DS5 controller.
+        Send a short motor pulse to the DS5 controller. 
+        
+        Each time the function is called, a new thread is created to send the pulse. 
+        This prevents the function from blocking the main thread.
         
         Parameters
         ----------
         pulse_length : float
-            Length of the pulse in seconds
+            Length of the pulse in seconds, should be a multiple of 0.1 seconds
         no_pulses : int
             Number of pulses to send
         """
         
-        for i in range(no_pulses):
-            motor_msg = SetMotor()
-            motor_msg.left_motor = 255
-            motor_msg.right_motor = 255
-            self.setMotor.publish(motor_msg)
-            time.sleep(pulse_length)
-            
-            motor_msg.left_motor = 0
-            motor_msg.right_motor = 0
-            self.setMotor.publish(motor_msg)
+        def send_pulse_task():
+            last_press = not self.button_pressed_flag.is_set()
+            self.button_pressed_flag.set()
+            for i in range(no_pulses):                
+                motor_msg = SetMotor()
+                motor_msg.left_motor = 255
+                motor_msg.right_motor = 255
+                self.setMotor.publish(motor_msg)
+                
+                # Sleep for pulse length but check if the thread has been killed
+                for i in range(pulse_length%0.1):
+                    # Ensure that only the latest thread runs to completion
+                    if self.button_pressed_flag.is_set() or last_press:
+                        self.button_pressed_flag.clear()
+                        last_press = False
+                        time.sleep(0.1)
+                    else:
+                        return
+                    
+                motor_msg.left_motor = 0
+                motor_msg.right_motor = 0
+                self.setMotor.publish(motor_msg)            
+                
+        thread = threading.Thread(target=send_pulse_task)
+        thread.start()
             
     # ================================================================================
     # Callback Functions
@@ -148,6 +167,9 @@ class ds5_teleop():
     # ================================================================================
 
     def __init__(self):
+        
+        # Threading flags
+        self.button_pressed_flag = threading.Event()
 
         # pub = rospy.Publisher('chatter', String, queue_size=10)
         rospy.init_node('ds5_teleop', anonymous=True)
