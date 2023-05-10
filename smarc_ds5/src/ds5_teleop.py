@@ -188,6 +188,8 @@ class ds5_teleop():
     
     def shutdown(self):
         
+        rospy.loginfo("Shutting down DS5 teleop node")
+        
         # On shutdown, send a motor pulse to indicate shutdown and send teleop disabled
         self.set_LED(0, 0, 255)
         self.send_teleop_enabled(False)
