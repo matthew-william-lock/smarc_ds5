@@ -115,11 +115,10 @@ class ds5_teleop():
                     # Ensure that only the latest thread runs to completion
                     if self.button_pressed_flag.is_set() or last_press:
                         self.button_pressed_flag.clear()
-                        last_press = False
-                        time.sleep(0.1)
+                        time.sleep(0.05)
                     else:
                         return
-                    self.set_motor(0, 0)          
+                self.set_motor(0, 0)          
                 
         thread = threading.Thread(target=send_pulse_task(no_pulses))
         thread.start()
