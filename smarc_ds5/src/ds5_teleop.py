@@ -141,7 +141,7 @@ class ds5_teleop():
             rospy.loginfo("Teleop enabled: {}".format(self.teleop_enabled))
 
             # Set LED colour
-            self.set_LED(255 if self.teleop_enabled else 0, 255 if not self.teleop_enabled else 0, 0)
+            self.set_LED(255 if not self.teleop_enabled else 0, 255 if self.teleop_enabled else 0, 0)
             
             if self.teleop_enabled:
                 self.send_motor_pulse(0.2, 1)
