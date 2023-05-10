@@ -66,6 +66,7 @@ class ds5_teleop():
         colour_msg.G = G
         colour_msg.B = B
         self.setLED.publish(colour_msg)
+        rospy.loginfo("Set LED colour to R: {}, G: {}, B: {}".format(R, G, B))
     
     # ================================================================================
     # Motor Feedback Functions
@@ -194,7 +195,6 @@ class ds5_teleop():
         self.set_LED(0, 0, 255)
         self.send_teleop_enabled(False)
         self.send_motor_pulse(0.2, 2)
-        
 
     def __init__(self):
         
@@ -223,7 +223,6 @@ class ds5_teleop():
 
         # Joy subscriber
         self.joy_sub = rospy.Subscriber('joy', Joy, self.joy_callback)
-        
                 
         rospy.on_shutdown(self.shutdown)
 
