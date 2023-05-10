@@ -9,6 +9,7 @@ from pydualsense import *
 
 from ds5_msgs.msg import SetColour
 from ds5_msgs.msg import SetMotor
+from ds5_msgs.msg import JoyButtons
 
 from sam_msgs.msg import Leak
 
@@ -22,11 +23,15 @@ class Ds5Ros():
         self.noderate = rospy.get_param("noderate", 50.0)
         # receive feedback from robot_joy_control node
         self.joy_sub_topic = rospy.get_param("joy_sub", "joy/set_feedback")
+        
         # send signal to robot_joy_control node
         self.joy_pub_topic = rospy.get_param("joy_pub", "joy")
+        self.btn_pres_topic = rospy.get_param("btn_pres", "joy_buttons")
+        
         # controller is not straight zero for the axis.. prevent tiny robot movements
         self.deadzone = rospy.get_param("deadzone", 0.05)
         self.joy_pub = rospy.Publisher(self.joy_pub_topic, Joy, queue_size = 1)
+        self.joy_btn_pub = rospy.Publisher(self.btn_pres_topic, JoyButtons, queue_size = 1)
         self.maskR = 0xFF0000
         self.maskG = 0x00FF00
         self.maskB = 0x0000FF
@@ -65,6 +70,34 @@ class Ds5Ros():
 
     def set_LED(self, msg: SetColour):
         self.dualsense.light.setColorI(msg.R, msg.G, msg.B)
+        
+    # ================================================================================
+    # DS5 Messages
+    # ================================================================================
+    
+    def publish_button_pressed(self):
+        
+        joy = JoyButtons()
+        
+        # dpad
+        joy.dpad_down = self.dualsense.state.DpadDown == 1
+        joy.dpad_up = self.dualsense.state.DpadUp == 1
+        joy.dpad_left = self.dualsense.state.DpadLeft == 1
+        joy.dpad_right = self.dualsense.state.DpadRight == 1
+        
+        # Face
+        joy.face_circle = self.dualsense.state.circle == 1
+        joy.face_square = self.dualsense.state.square == 1
+        joy.face_triangle = self.dualsense.state.triangle == 1
+        joy.face_x = self.dualsense.state.cross == 1
+        
+        # Shoulders/Bumpers/Triggers
+        joy.shoulder_l1 = self.dualsense.state.L1 == 1
+        joy.shoulder_l2 = self.dualsense.state.L2Btn
+        joy.shoulder_r1 = self.dualsense.state.R1 == 1
+        joy.shoulder_r2 = self.dualsense.state.R2Btn
+        
+        self.joy_btn_pub.publish(joy)
    
     def joy_publish(self):
         # try:

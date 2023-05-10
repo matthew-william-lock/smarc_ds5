@@ -1,19 +1,19 @@
 Header Header
 
 # d-pad (arrow keys)
-Bool dpad_up
-Bool dpad_down
-Bool dpad_left
-Bool dpad_right
+bool dpad_up
+bool dpad_down
+bool dpad_left
+bool dpad_right
 
 # face buttons
-Bool face_triangle
-Bool face_x
-Bool face_square
-Bool face_circle
+bool face_triangle
+bool face_x
+bool face_square
+bool face_circle
 
 # shoulder buttons
-Bool shoulder_l1
-Bool shoulder_r1
+bool shoulder_l1
+bool shoulder_r1
 float32 shoulder_l2
 float32 shoulder_r2

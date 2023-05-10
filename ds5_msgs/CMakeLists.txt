@@ -49,6 +49,7 @@ add_message_files(
   FILES
   SetColour.msg
   SetMotor.msg
+  JoyButtons.msg
 )
 
 ## Generate services in the 'srv' folder
