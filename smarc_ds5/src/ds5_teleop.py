@@ -44,6 +44,30 @@ import time
 class ds5_teleop():
     
     # ================================================================================
+    # LED Feedback Functions
+    # ================================================================================
+    
+    def set_LED(self, R: int, G: int, B: int):
+        """
+        Set the LED colour on the DS5 controller
+        
+        Parameters
+        ----------
+        R : int
+            Red value between 0 and 255
+        G : int
+            Green value between 0 and 255
+        B : int
+            Blue value between 0 and 255
+        """
+        
+        colour_msg = SetColour()
+        colour_msg.R = R
+        colour_msg.G = G
+        colour_msg.B = B
+        self.setLED.publish(colour_msg)
+    
+    # ================================================================================
     # Motor Feedback Functions
     # ================================================================================
     
@@ -105,11 +129,7 @@ class ds5_teleop():
             rospy.loginfo("Teleop enabled: {}".format(self.teleop_enabled))
 
             # Set LED colour
-            colour_msg = SetColour()
-            colour_msg.R = 255 if not self.teleop_enabled else 0
-            colour_msg.G = 255 if self.teleop_enabled else 0
-            colour_msg.B = 0
-            self.setLED.publish(colour_msg)
+            self.set_LED(255 if self.teleop_enabled else 0, 255 if not self.teleop_enabled else 0, 0)
             
             if self.teleop_enabled:
                 self.send_motor_pulse(0.2, 1)
@@ -199,6 +219,7 @@ class ds5_teleop():
             rate.sleep()
             
         # On shutdown, send a motor pulse to indicate shutdown and send teleop disabled
+        self.set_LED(0, 0, 255)
         self.send_teleop_enabled(False)
         self.send_motor_pulse(0.2, 2)
         
