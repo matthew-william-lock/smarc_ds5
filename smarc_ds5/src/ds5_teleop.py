@@ -183,8 +183,16 @@ class ds5_teleop():
 
 
     # ================================================================================
-    # Node Init
+    # Node Init and shutdown
     # ================================================================================
+    
+    def shutdown(self):
+        
+        # On shutdown, send a motor pulse to indicate shutdown and send teleop disabled
+        self.set_LED(0, 0, 255)
+        self.send_teleop_enabled(False)
+        self.send_motor_pulse(0.2, 2)
+        
 
     def __init__(self):
         
@@ -213,16 +221,13 @@ class ds5_teleop():
 
         # Joy subscriber
         self.joy_sub = rospy.Subscriber('joy', Joy, self.joy_callback)
+        
+                
+        rospy.on_shutdown(self.shutdown)
 
         while not rospy.is_shutdown():
             self.send_teleop_enabled(self.teleop_enabled)
-            rate.sleep()
-            
-        # On shutdown, send a motor pulse to indicate shutdown and send teleop disabled
-        self.set_LED(0, 0, 255)
-        self.send_teleop_enabled(False)
-        self.send_motor_pulse(0.2, 2)
-        
+            rate.sleep()        
 
 if __name__ == '__main__':
     try:
