@@ -104,7 +104,7 @@ class ds5_teleop():
             Number of pulses to send
         """
         
-        def send_pulse_task():
+        def send_pulse_task(no_pulses):
             last_press = not self.button_pressed_flag.is_set()
             self.button_pressed_flag.set()
             for i in range(no_pulses):                
@@ -119,10 +119,9 @@ class ds5_teleop():
                         time.sleep(0.1)
                     else:
                         return
-                    
-                self.set_motor(0, 0)          
+                    self.set_motor(0, 0)          
                 
-        thread = threading.Thread(target=send_pulse_task)
+        thread = threading.Thread(target=send_pulse_task(no_pulses))
         thread.start()
             
     # ================================================================================
