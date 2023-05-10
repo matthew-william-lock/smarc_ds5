@@ -69,8 +69,25 @@ class ds5_teleop():
         rospy.loginfo("Set LED colour to R: {}, G: {}, B: {}".format(R, G, B))
     
     # ================================================================================
-    # Motor Feedback Functions
+    # Motor Functions
     # ================================================================================
+    
+    def set_motor(self, left_motor: int, right_motor: int):
+        """
+        Set the motor speed on the DS5 controller
+        
+        Parameters
+        ----------
+        left_motor : int
+            Left motor speed between 0 and 255
+        right_motor : int
+            Right motor speed between 0 and 255
+        """
+        
+        motor_msg = SetMotor()
+        motor_msg.left_motor = left_motor
+        motor_msg.right_motor = right_motor
+        self.setMotor.publish(motor_msg)
     
     def send_motor_pulse(self, pulse_length: float, no_pulses = 1):
         """
@@ -91,10 +108,7 @@ class ds5_teleop():
             last_press = not self.button_pressed_flag.is_set()
             self.button_pressed_flag.set()
             for i in range(no_pulses):                
-                motor_msg = SetMotor()
-                motor_msg.left_motor = 255
-                motor_msg.right_motor = 255
-                self.setMotor.publish(motor_msg)
+                self.set_motor(255, 255)
                 
                 # Sleep for pulse length but check if the thread has been killed
                 for i in range(int(pulse_length / 0.1)):
@@ -106,9 +120,7 @@ class ds5_teleop():
                     else:
                         return
                     
-                motor_msg.left_motor = 0
-                motor_msg.right_motor = 0
-                self.setMotor.publish(motor_msg)            
+                self.set_motor(0, 0)          
                 
         thread = threading.Thread(target=send_pulse_task)
         thread.start()
