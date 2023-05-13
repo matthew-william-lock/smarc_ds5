@@ -29,12 +29,17 @@ SOFTWARE.
 import rospy
 
 from std_msgs.msg import Bool
-
 from sensor_msgs.msg import Joy
-
 from smarc_joy_msgs.msg import JoyButtons
 
 import threading
+
+from evdev import ecodes
+from evdev import InputDevice
+from evdev import ff
+from evdev import util
+
+import time
 
 class xbox_joy():
 
@@ -49,14 +54,41 @@ class xbox_joy():
 
         self.teleop_enabled_pub = rospy.Publisher('ctrl/teleop/enable', Bool, queue_size=1)
         self.joy_btn_pub = rospy.Publisher('ctrl/joy_buttons', JoyButtons, queue_size=1)
-
         self.joy_sub = rospy.Subscriber('joy', Joy, self.joy_callback)
 
         rospy.loginfo("[XBOX CONTROLLER] Starting Xbox controller node")
 
+        # CONTROLER SETUP
+        self.device_file = None
+        for name in util.list_devices():
+            self.device_file = InputDevice(name)
+            if ecodes.EV_FF in self.device_file.capabilities():
+                break
+        if self.device_file is None:
+            rospy.logerr_once("[XBOX CONTROLLER] Sorry, no FF capable device found")
+
+        self.load_effects()
+
         while not rospy.is_shutdown():
             self.send_teleop_enabled(self.teleop_enabled)
             rate.sleep()  
+
+    def load_effects(self):
+        """
+        Load the effects for the controller
+        Taken from https://github.com/atar-axis/xpadneo/blob/master/misc/examples/python_asyncio_evdev/gamepad.py
+        """
+        # effect 1, light rumble
+        rumble = ff.Rumble(strong_magnitude=0xc000, weak_magnitude=0x500)
+        duration_ms = 300
+        effect = ff.Effect(ecodes.FF_RUMBLE, -1, 0, ff.Trigger(0, 0), ff.Replay(duration_ms, 0), ff.EffectType(ff_rumble_effect=rumble))
+        effect = ff.Effect(ecodes.FF_RUMBLE, -1, 0, ff.Trigger(0, 0), ff.Replay(duration_ms, 0), ff.EffectType(ff_rumble_effect=rumble))
+        self.effect1_id = self.device_file.upload_effect(effect)
+        # effect 2, strong rumble
+        rumble = ff.Rumble(strong_magnitude=0xc000, weak_magnitude=0x0000)
+        duration_ms = 200
+        effect = ff.Effect(ecodes.FF_RUMBLE, -1, 0, ff.Trigger(0, 0), ff.Replay(duration_ms, 0), ff.EffectType(ff_rumble_effect=rumble))
+        self.effect2_id = self.device_file.upload_effect(effect)
 
     # ================================================================================
     # Callbacks
@@ -74,6 +106,13 @@ class xbox_joy():
             self.enable_teleop_pressed = True
             rospy.loginfo("[XBOX CONTROLLER] Teleop enabled: {}".format(self.teleop_enabled))
 
+            if self.teleop_enabled:
+                # Only rumble if teleop is enabled
+                self.rumble(1)
+            else:
+                # Two rumbles if teleop is disabled
+                self.rumble(2)
+
         if not teleop_btn_pressed:
             self.enable_teleop_pressed = False
             
@@ -87,8 +126,9 @@ class xbox_joy():
 
         self.joy_btn_pub.publish(joy_buttons_msg)
 
-        
-
+    # ================================================================================
+    # Publish Functions
+    # ================================================================================
 
     def send_teleop_enabled(self, teleop_enabled: bool):
         """
@@ -98,6 +138,25 @@ class xbox_joy():
         teleop_enabled_msg = Bool()
         teleop_enabled_msg.data = teleop_enabled
         self.teleop_enabled_pub.publish(teleop_enabled_msg)
+
+    # ================================================================================
+    # Controller Function
+    # ================================================================================
+
+    def rumble(self, no_pulses = 1):
+        """
+        Set the rumble motors on the controller
+        
+        Parameters
+        ----------
+        left_motor : int
+            Left motor speed between 0 and 255
+        right_motor : int
+            Right motor speed between 0 and 255
+        """
+
+        repeat_count = no_pulses
+        self.device_file.write(ecodes.EV_FF, self.effect1_id, repeat_count)
 
 if __name__ == '__main__':
     try:
