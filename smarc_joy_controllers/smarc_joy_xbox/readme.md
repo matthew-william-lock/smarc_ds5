@@ -43,6 +43,8 @@ After following the installation steps and building the ros package, launch the 
 roslaunch smarc_joy_xbox joy.launch
 ```
 
+## Controls 
+
 | Button | Action | Vibration Feedback |
 | --- | --- | --- |
 | ```Left stick``` | Send RPM commands to motors | - | 
