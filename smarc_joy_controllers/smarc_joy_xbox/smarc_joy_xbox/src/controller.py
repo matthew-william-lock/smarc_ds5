@@ -120,12 +120,24 @@ class xbox_joy():
             self.enable_teleop_pressed = False
             
         joy_buttons_msg = JoyButtons()
+        joy_buttons_msg.Header.stamp = rospy.Time.now()
+        joy_buttons_msg.Header.frame_id = "xbox_controller"
         joy_buttons_msg.left_x = msg.axes[0]
         joy_buttons_msg.left_y = msg.axes[1]
         joy_buttons_msg.right_x = msg.axes[3]
         joy_buttons_msg.right_y = msg.axes[4]
 
-        joy_buttons_msg.teleop_enable = self.teleop_enabled
+        joy_buttons_msg.teleop_enable = msg.buttons[0] == 1
+
+        joy_buttons_msg.d_down = msg.axes[7] == -1
+        joy_buttons_msg.d_up = msg.axes[7] == 1
+        joy_buttons_msg.d_left = msg.axes[6] == 1
+        joy_buttons_msg.d_right = msg.axes[6] == -1
+
+        joy_buttons_msg.shoulder_l1 = msg.buttons[4] == 1
+        joy_buttons_msg.shoulder_l2 = msg.axes[2]
+        joy_buttons_msg.shoulder_r1 = msg.buttons[5] == 1
+        joy_buttons_msg.shoulder_r2 = msg.axes[5]
 
         self.joy_btn_pub.publish(joy_buttons_msg)
 
