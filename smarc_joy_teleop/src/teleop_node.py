@@ -24,25 +24,16 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 """
 
-# Create a ROS node that republishes a joy message
+# Create a ROS node determines the setpoints for the SAM thrusters based on the joystick input
 
 
 import rospy
-
-from sensor_msgs.msg import JoyFeedbackArray, Joy
-from smarc_msgs.msg import ThrusterRPM
-from sam_msgs.msg import ThrusterAngles
-
-from ds5_msgs.msg import SetColour
-from ds5_msgs.msg import SetMotor
 
 from std_msgs.msg import Bool
 from geometry_msgs.msg import Twist
 
 from smarc_joy_msgs.msg import JoyButtons
 
-import threading
-import time
 import math
 
 class teleop():
@@ -100,9 +91,6 @@ class teleop():
     # ================================================================================
 
     def __init__(self):
-        
-        # Threading flags
-        self.button_pressed_flag = threading.Event()
 
         # pub = rospy.Publisher('chatter', String, queue_size=10)
         rospy.init_node('ds5_teleop', anonymous=True)
