@@ -4,6 +4,8 @@
 
 Control SAM AUV using a DualSense controller, and get sensory feedback from the controller's LED and vibration motors.
 
+:warning: Does not support wireless bluetooth operation, use xbox controller for this instead.
+
 <p align="center">
   <img src="https://user-images.githubusercontent.com/53016036/235476324-ffab01e0-7e11-438f-a3e0-7eedcea22abf.png" width="100%">
 </p>
