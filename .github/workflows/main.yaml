@@ -12,7 +12,7 @@ jobs:
     strategy:
       matrix:
         env:
-          - {ROS_DISTRO: melodic, ROS_REPO: main, UPSTREAM_WORKSPACE: "smarc_ds5.rosinstall"}
+          - {ROS_DISTRO: melodic, ROS_REPO: main, UPSTREAM_WORKSPACE: "smarc_joy.rosinstall"}
         
     runs-on: ubuntu-latest
     steps:
