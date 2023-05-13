@@ -1,7 +1,5 @@
 # smarc_joy_xbox
 
-> Still in development
-
 ## Installation
 
 While the Xbox controller works with the ros ```joy``` package out of the box, the ```joy``` package does not support the vibration motors or LED feedback. Therefore, this package uses the [xpadneo](https://github.com/atar-axis/xpadneo) advanced linux driver for the Xbox controller.
@@ -36,3 +34,17 @@ python3 rumble.py
 ```
 
 If the controller is working, you should feel the vibration motors turn on.
+
+## Launch
+
+After following the installation steps and building the ros package, launch the node using the following command:
+
+```bash
+roslaunch smarc_joy_xbox joy.launch
+```
+
+| Button | Action | Vibration Feedback |
+| --- | --- | --- |
+| ```Left stick``` | Send RPM commands to motors | - | 
+| ```Right stick``` | Send thrust vector commands | - | 
+| ```A``` | Toggle teleop enable | ```One short pulse``` - Enabled <br>```Two short pulse``` - Disabled |

@@ -58,7 +58,14 @@ class xbox_joy():
 
         rospy.loginfo("[XBOX CONTROLLER] Starting Xbox controller node")
 
-        # CONTROLER SETUP
+        self.setup_controller()
+
+        while not rospy.is_shutdown():
+            self.send_teleop_enabled(self.teleop_enabled)
+            rate.sleep()  
+
+    def setup_controller(self):
+
         self.device_file = None
         for name in util.list_devices():
             self.device_file = InputDevice(name)
@@ -68,10 +75,6 @@ class xbox_joy():
             rospy.logerr_once("[XBOX CONTROLLER] Sorry, no FF capable device found")
 
         self.load_effects()
-
-        while not rospy.is_shutdown():
-            self.send_teleop_enabled(self.teleop_enabled)
-            rate.sleep()  
 
     def load_effects(self):
         """
