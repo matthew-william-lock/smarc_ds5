@@ -1,4 +1,4 @@
-# smarc_ds5
+# smarc_joy_ds5
 
 [![CI](https://github.com/matthew-william-lock/smarc_ds5_ros/actions/workflows/main.yaml/badge.svg)](https://github.com/matthew-william-lock/smarc_ds5_ros/actions/workflows/main.yaml) [![license](https://img.shields.io/badge/License-MIT-blue.svg)](https://mit-license.org/)
 
