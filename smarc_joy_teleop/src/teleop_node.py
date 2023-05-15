@@ -72,7 +72,7 @@ class teleop():
 
             ctrl_msg = Twist()
             ctrl_msg.linear.x = rpm_cmd
-            ctrl_msg.angular.z = x_cmd
+            ctrl_msg.angular.z = -x_cmd
             ctrl_msg.angular.y = y_cmd
 
             self.rpm_joystick_pub.publish(ctrl_msg)
